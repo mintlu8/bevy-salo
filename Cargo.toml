@@ -1,0 +1,39 @@
+[package]
+name = "bevy-salo"
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Mincong Lu <mintlux667@gmail.com>"]
+license = "MIT OR Apache-2.0"
+
+readme = "README.md"
+repository = "https://github.com/mintlu8/bevy-salo"
+description = """
+An ECS based serialization crate for bevy_ecs with no dependency on reflection.
+"""
+keywords = ["bevy", "ecs", "serde", "save"]
+
+[features]
+default = ["bevy_app", "fs"]
+#default = ["bevy_app", "fs", "postcard", "ron"]
+
+## This enabled file related features
+fs = []
+
+[dependencies]
+bevy_ecs = { version = "^0.12", default-features = false }
+bevy_hierarchy = "^0.12"
+serde = { version = "^1", features = ["derive"] }
+serde_json = "^1"
+bevy_app = { version = "^0.12", optional = true, default-features = false }
+postcard = { version = "^1", default-features = false, optional = true, features = ["alloc", "use-std"] }
+ron = { version = "^0.8", optional = true }
+anyhow = "^1"
+
+[[example]]
+name = "rpg_buffs"
+required-features = ["bevy_app", "fs", "postcard", "ron"]
+
+[[test]]
+name = "buffs"
+required-features = ["bevy_app", "fs", "postcard", "ron"]
