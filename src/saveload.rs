@@ -98,12 +98,6 @@ pub(crate) enum EntityParent {
     Entity(u64),
 }
 
-impl EntityParent {
-    pub fn is_root(&self) -> bool {
-        self == &Self::Root
-    }
-}
-
 /// Path of an entity. Either an entity number or a joined path.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum EntityPath {
