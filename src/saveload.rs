@@ -69,7 +69,7 @@ impl<M: Marker> DeserializeContext<M> {
     pub fn get_or_new(&mut self, commands: &mut Commands, path: &EntityPath) -> Entity {
         match path {
             EntityPath::Unique => commands.spawn_empty().id(),
-            _ => match self.path_map.get(&path) {
+            _ => match self.path_map.get(path) {
                 Some(entity) => *entity,
                 None => {
                     let id = commands.spawn_empty().id();
@@ -154,10 +154,10 @@ pub trait SaveLoad: Component + Sized {
     /// # Parameters
     /// 
     /// * path_fetcher: Convert entity to path if exists.
-    fn to_serializable<'t, 'w, 's>(&'t self, 
+    fn to_serializable<'t>(&'t self, 
         entity: Entity,
         path_fetcher: impl Fn(Entity) -> EntityPath,
-        res: &'t SystemParamItem<Self::Context<'w, 's>>
+        res: &'t SystemParamItem<Self::Context<'_, '_>>
     ) -> Self::Ser<'t>;
 
     /// Inplement this if: 
@@ -172,12 +172,12 @@ pub trait SaveLoad: Component + Sized {
     /// # Parameters
     /// 
     /// * entity_fetcher: This will either get or spawn an entity based on the query.
-    fn from_deserialize<'w, 's>(
+    fn from_deserialize(
         de: Self::De, 
         commands: &mut Commands,
         self_entity: Entity,
         entity_fetcher: impl FnMut(&mut Commands, &EntityPath) -> Entity, 
-        ctx: &mut SystemParamItem<Self::ContextMut<'w, 's>>
+        ctx: &mut SystemParamItem<Self::ContextMut<'_, '_>>
     ) -> Self;
 
     /// Name associated with this type. 
@@ -217,12 +217,12 @@ pub trait SaveLoad: Component + Sized {
     }
 
     /// System for serialization.
-    fn serialize_system<'w, 's, M: Marker>(
+    fn serialize_system<M: Marker>(
         mut paths: ResMut<SerializeContext<M>>,
         query: Query<(Entity, &Self), M::Query>, 
         parents: Query<&Parent>,
         marked: Query<(), M::Query>,
-        res: StaticSystemParam<Self::Context<'w, 's>>,
+        res: StaticSystemParam<Self::Context<'_, '_>>,
     ) {
         for (entity, item) in query.iter() {
             let parent = match parents.get(entity) {
@@ -271,10 +271,10 @@ pub trait SaveLoad: Component + Sized {
     }
 
     /// System for deserialization.
-    fn deserialize_system<'w, 's, M: Marker>(
+    fn deserialize_system<M: Marker>(
         mut commands: Commands,
         mut context: ResMut<DeserializeContext<M>>,
-        mut ctx_mut: StaticSystemParam<Self::ContextMut<'w, 's>>,
+        mut ctx_mut: StaticSystemParam<Self::ContextMut<'_, '_>>,
     ) {
         let Some(items) = context.components.remove(Self::type_name().as_ref()) else {return};
         for PathedValue { parent, path, value } in items {
@@ -290,7 +290,7 @@ pub trait SaveLoad: Component + Sized {
                 }
             };
             let ctx_fetch = |commands: &mut Commands, path: &EntityPath| {
-                match context.path_map.get(&path) {
+                match context.path_map.get(path) {
                     Some(entity) => *entity,
                     None => commands.spawn_empty().id()
                 }
@@ -358,7 +358,7 @@ impl<T> SaveLoadMapped for T where T: SaveLoadCore {
         <Self as SaveLoadCore>::path_name(self)
     }
 
-    fn to_serializable<'ser>(&'ser self) -> Self::Ser<'ser> { self }
+    fn to_serializable(&self) -> Self::Ser<'_> { self }
 
     fn from_deserialize(de: Self::De) -> Self { de }
 
@@ -368,7 +368,7 @@ impl<T> SaveLoadMapped for T where T: SaveLoadCore {
 pub trait SaveLoadMapped: Serialize + DeserializeOwned + Component {
     type Ser<'ser>: Serialize;
     type De: DeserializeOwned;
-    fn to_serializable<'ser>(&'ser self) -> Self::Ser<'ser>;
+    fn to_serializable(&self) -> Self::Ser<'_>;
 
     fn from_deserialize(de: Self::De) -> Self;
 
@@ -406,18 +406,18 @@ impl<T> SaveLoad for T where T: SaveLoadMapped {
         <Self as SaveLoadMapped>::path_name(self)
     }
 
-    fn to_serializable<'t, 'w, 's>(&'t self, 
+    fn to_serializable<'t>(&'t self, 
         _: Entity,
         _: impl Fn(Entity) -> EntityPath, 
-        _: &'t SystemParamItem<Self::Context<'w, 's>>) -> Self::Ser<'t>{
+        _: &'t SystemParamItem<Self::Context<'_, '_>>) -> Self::Ser<'t>{
         <Self as SaveLoadMapped>::to_serializable(self)
     }
 
-    fn from_deserialize<'w, 's>(de: Self::De, 
+    fn from_deserialize(de: Self::De, 
         _: &mut Commands,
         _: Entity,
         _: impl FnMut(&mut Commands, &EntityPath) -> Entity, 
-        _: &mut SystemParamItem<Self::ContextMut<'w, 's>>) -> Self{
+        _: &mut SystemParamItem<Self::ContextMut<'_, '_>>) -> Self{
         <Self as SaveLoadMapped>::from_deserialize(de)
     }
 }

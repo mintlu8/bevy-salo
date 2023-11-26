@@ -26,7 +26,8 @@ impl EntityPathUntagged<'_> {
     }
 }
 
-fn cow_is_default<'t>(v: &Cow<'t, impl SerializeValue>) -> bool{
+#[allow(clippy::ptr_arg)]
+fn cow_is_default(v: &Cow<'_, impl SerializeValue>) -> bool{
     v.as_ref().is_empty()
 }
 
@@ -45,7 +46,7 @@ impl<'t> From<&'t EntityParent> for EntityPathUntagged<'t> {
     fn from(value: &'t EntityParent) -> Self {
         match value {
             EntityParent::Root => Self::None,
-            EntityParent::Path(p) => Self::Path(Cow::Borrowed(&p)),
+            EntityParent::Path(p) => Self::Path(Cow::Borrowed(p)),
             EntityParent::Entity(e) => Self::Entity(*e),
         }
     }
@@ -55,7 +56,7 @@ impl<'t> From<&'t EntityPath> for EntityPathUntagged<'t> {
     fn from(value: &'t EntityPath) -> Self {
         match value {
             EntityPath::Unique => Self::None,
-            EntityPath::Path(p) => Self::Path(Cow::Borrowed(&p)),
+            EntityPath::Path(p) => Self::Path(Cow::Borrowed(p)),
             EntityPath::Entity(e) => Self::Entity(*e),
         }
     }
@@ -65,7 +66,7 @@ impl<'t> From<&'t EntityPath> for EntityPathTagged<'t> {
     fn from(value: &'t EntityPath) -> Self {
         match value {
             EntityPath::Unique => Self::Unique,
-            EntityPath::Path(p) => Self::Path(Cow::Borrowed(&p)),
+            EntityPath::Path(p) => Self::Path(Cow::Borrowed(p)),
             EntityPath::Entity(e) => Self::Entity(*e),
         }
     }

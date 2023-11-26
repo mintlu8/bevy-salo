@@ -45,7 +45,7 @@ macro_rules! schedules {
 
             impl<M: Marker> Clone for $names<M> {
                 fn clone(&self) -> Self {
-                    Self(PhantomData)
+                    *self
                 }
             }
             impl<M: Marker> Copy for $names<M> {}

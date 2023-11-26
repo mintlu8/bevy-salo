@@ -1,4 +1,16 @@
 {
+    "Offhand": [
+        (
+            parent: "OriginalPlayers::John",
+            path: "OriginalPlayers::John::offhand",
+            value: {},
+        ),
+        (
+            parent: "Players::John",
+            path: "Players::John::offhand",
+            value: {},
+        ),
+    ],
     "Buff": [
         (
             parent: "OriginalPlayers::John::mainhand",
@@ -145,18 +157,6 @@
             },
         ),
     ],
-    "Offhand": [
-        (
-            parent: "OriginalPlayers::John",
-            path: "OriginalPlayers::John::offhand",
-            value: {},
-        ),
-        (
-            parent: "Players::John",
-            path: "Players::John::offhand",
-            value: {},
-        ),
-    ],
     "Weapon": [
         (
             parent: "OriginalPlayers::John",
@@ -177,6 +177,40 @@
             parent: "Players::Jane",
             path: "Players::Jane::mainhand",
             value: {},
+        ),
+    ],
+    "Unit": [
+        (
+            parent: "OriginalPlayers",
+            path: "OriginalPlayers::John",
+            value: {
+                "hp": 32,
+                "name": "John",
+            },
+        ),
+        (
+            parent: "OriginalPlayers",
+            path: "OriginalPlayers::Jane",
+            value: {
+                "hp": 28,
+                "name": "Jane",
+            },
+        ),
+        (
+            parent: "Players",
+            path: "Players::John",
+            value: {
+                "hp": 32,
+                "name": "John",
+            },
+        ),
+        (
+            parent: "Players",
+            path: "Players::Jane",
+            value: {
+                "hp": 28,
+                "name": "Jane",
+            },
         ),
     ],
     "Item": [
@@ -346,40 +380,6 @@
             path: 71,
             value: {
                 "name": "Mana Potion",
-            },
-        ),
-    ],
-    "Unit": [
-        (
-            parent: "OriginalPlayers",
-            path: "OriginalPlayers::John",
-            value: {
-                "hp": 32,
-                "name": "John",
-            },
-        ),
-        (
-            parent: "OriginalPlayers",
-            path: "OriginalPlayers::Jane",
-            value: {
-                "hp": 28,
-                "name": "Jane",
-            },
-        ),
-        (
-            parent: "Players",
-            path: "Players::John",
-            value: {
-                "hp": 32,
-                "name": "John",
-            },
-        ),
-        (
-            parent: "Players",
-            path: "Players::Jane",
-            value: {
-                "hp": 28,
-                "name": "Jane",
             },
         ),
     ],

@@ -99,20 +99,20 @@ mod test {
         type Context<'w, 's> = Res<'w, ElementsServer>;
         type ContextMut<'w, 's> = ResMut<'s, ElementsServer>;
 
-        fn to_serializable<'t, 'w, 's>(&'t self, 
+        fn to_serializable<'t>(&'t self, 
             _: Entity,
             _: impl Fn(Entity) -> EntityPath, 
-            res: &'t Res<'w, ElementsServer>
+            res: &'t Res<ElementsServer>
         ) -> Self::Ser<'t> {
             res.as_str(*self)
         }
 
-        fn from_deserialize<'w, 's>(
+        fn from_deserialize<'w>(
             de: Self::De, 
             _: &mut bevy_ecs::system::Commands,
             _: bevy_ecs::entity::Entity,
             _: impl FnMut(&mut bevy_ecs::system::Commands, &crate::EntityPath) -> bevy_ecs::entity::Entity, 
-            res: &mut ResMut<'s, ElementsServer>
+            res: &mut ResMut<ElementsServer>
         ) -> Self {
             res.get(&de)
         }

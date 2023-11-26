@@ -38,7 +38,7 @@ pub trait SerializationMethod: Debug + Send + Sync + 'static {
         anyhow::Ok(())
     }
     #[cfg(feature="fs")]
-    fn deserialize_file<'de, T: DeserializeOwned>(file: &str)-> anyhow::Result<T> {
+    fn deserialize_file<T: DeserializeOwned>(file: &str)-> anyhow::Result<T> {
         let bytes = std::fs::read(file)?;
         Self::deserialize(&bytes)
     }

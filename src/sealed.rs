@@ -85,6 +85,6 @@ impl SerializationResult for Vec<u8> {
         Some(w.remove_resource::<BytesOutput<M>>()?.take())
     }
     fn as_bytes(&self) -> &[u8] {
-        &self
+        self
     }
 }
