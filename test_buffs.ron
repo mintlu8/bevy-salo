@@ -1,72 +1,4 @@
 {
-    "Offhand": [
-        (
-            parent: "OriginalPlayers::John",
-            path: "OriginalPlayers::John::offhand",
-            value: {},
-        ),
-        (
-            parent: "Players::John",
-            path: "Players::John::offhand",
-            value: {},
-        ),
-    ],
-    "Unit": [
-        (
-            parent: "OriginalPlayers",
-            path: "OriginalPlayers::John",
-            value: {
-                "hp": 32,
-                "name": "John",
-            },
-        ),
-        (
-            parent: "OriginalPlayers",
-            path: "OriginalPlayers::Jane",
-            value: {
-                "hp": 28,
-                "name": "Jane",
-            },
-        ),
-        (
-            parent: "Players",
-            path: "Players::John",
-            value: {
-                "hp": 32,
-                "name": "John",
-            },
-        ),
-        (
-            parent: "Players",
-            path: "Players::Jane",
-            value: {
-                "hp": 28,
-                "name": "Jane",
-            },
-        ),
-    ],
-    "Weapon": [
-        (
-            parent: "OriginalPlayers::John",
-            path: "OriginalPlayers::John::mainhand",
-            value: {},
-        ),
-        (
-            parent: "OriginalPlayers::Jane",
-            path: "OriginalPlayers::Jane::mainhand",
-            value: {},
-        ),
-        (
-            parent: "Players::John",
-            path: "Players::John::mainhand",
-            value: {},
-        ),
-        (
-            parent: "Players::Jane",
-            path: "Players::Jane::mainhand",
-            value: {},
-        ),
-    ],
     "Buff": [
         (
             parent: "OriginalPlayers::John::mainhand",
@@ -211,6 +143,40 @@
                 "stat": "Fire Damage",
                 "value": 5.0,
             },
+        ),
+    ],
+    "Offhand": [
+        (
+            parent: "OriginalPlayers::John",
+            path: "OriginalPlayers::John::offhand",
+            value: {},
+        ),
+        (
+            parent: "Players::John",
+            path: "Players::John::offhand",
+            value: {},
+        ),
+    ],
+    "Weapon": [
+        (
+            parent: "OriginalPlayers::John",
+            path: "OriginalPlayers::John::mainhand",
+            value: {},
+        ),
+        (
+            parent: "OriginalPlayers::Jane",
+            path: "OriginalPlayers::Jane::mainhand",
+            value: {},
+        ),
+        (
+            parent: "Players::John",
+            path: "Players::John::mainhand",
+            value: {},
+        ),
+        (
+            parent: "Players::Jane",
+            path: "Players::Jane::mainhand",
+            value: {},
         ),
     ],
     "Item": [
@@ -380,6 +346,40 @@
             path: 71,
             value: {
                 "name": "Mana Potion",
+            },
+        ),
+    ],
+    "Unit": [
+        (
+            parent: "OriginalPlayers",
+            path: "OriginalPlayers::John",
+            value: {
+                "hp": 32,
+                "name": "John",
+            },
+        ),
+        (
+            parent: "OriginalPlayers",
+            path: "OriginalPlayers::Jane",
+            value: {
+                "hp": 28,
+                "name": "Jane",
+            },
+        ),
+        (
+            parent: "Players",
+            path: "Players::John",
+            value: {
+                "hp": 32,
+                "name": "John",
+            },
+        ),
+        (
+            parent: "Players",
+            path: "Players::Jane",
+            value: {
+                "hp": 28,
+                "name": "Jane",
             },
         ),
     ],

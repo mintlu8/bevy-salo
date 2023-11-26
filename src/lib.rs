@@ -253,6 +253,8 @@
 //! # */
 //! ```
 //! 
+//! # Warnings
+//! 
 //! When serializing, non-serializing parents of 
 //! serialized children must be named.
 //! 
@@ -269,6 +271,8 @@
 //! # */
 //! ```
 //! 
+//! [`PathName`] is not serialized and should not be used in 
+//! non-static serialized entities.
 
 pub mod methods;
 mod saveload;
@@ -313,8 +317,9 @@ mod interner;
 /// Since schedules are unique per marker type, you can "fork" this by supplying a different `FORK` value.
 /// 
 /// ```rust
-/// # use bevy_salo::methods::Postcard;
+/// # /*
 /// type Schedule2 = bevy_salo::All<Postcard, '2'>;
+/// # */
 /// ```
 #[derive(Debug)]
 pub struct All<S: SerializationMethod=SerdeJson, const FORK: char='\0'>(PhantomData<S>);
@@ -324,7 +329,7 @@ pub trait MarkerComponent: Component + Debug + Default + Send + Sync + 'static {
     type Method: SerializationMethod;
 }
 
-/// Provides path names for entities, including non-serialized ones.
+/// Provides path names for non-serialized entities.
 #[derive(Debug, Clone, PartialEq, Eq, Component)]
 pub struct PathName(Cow<'static, str>);
 

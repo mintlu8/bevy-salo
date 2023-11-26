@@ -207,6 +207,8 @@ characters::John::weapon
 characters::Jane::(unnamed)::characters
 ```
 
+## Warnings
+
 When serializing, non-serializing parents of
 serialized children must be named.
 
@@ -220,3 +222,6 @@ Named::[Named]
 // illegal, parent is not named, cannot deserialize correctly
 (unnamed)::[Named]
 ```
+
+`PathName` is not serialized and should not be used in
+non-static serialized entities.
