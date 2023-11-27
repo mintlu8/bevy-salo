@@ -1,8 +1,8 @@
 # bevy-salo
 
 [![Latest version](https://img.shields.io/crates/v/bevy_salo.svg)](https://crates.io/crates/bevy-salo)
-[![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](./LICENSE)
 [![Documentation](https://docs.rs/bevy-salo/badge.svg)](https://docs.rs/bevy-salo/)
+[![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](./LICENSE)
 
 bevy_salo (SAveLOad) is an ECS based serialization crate for bevy_ecs.
 
