@@ -33,7 +33,7 @@ impl<T> SaveLoadRes for T where T: SaveLoadResCore {
         _: impl Fn(Entity) -> EntityPath,
         _: &'t SystemParamItem<Self::Context<'_, '_>>
     ) -> Self::Ser<'t> {
-        &self
+        self
     }
 
     fn from_deserialize(

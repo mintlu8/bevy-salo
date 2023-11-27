@@ -127,7 +127,7 @@ impl EntityPath {
             EntityPath::Entity(e) => panic!("Entity {:?} does not contain a name.", e),
             EntityPath::Path(p) => match p.rsplit_once("::") {
                 Some((_, a)) => a,
-                None => &p,
+                None => p,
             },
         }
     }
@@ -137,7 +137,7 @@ impl EntityPath {
         match self {
             EntityPath::Path(p) => match p.rsplit_once("::") {
                 Some((_, a)) => Some(a),
-                None => Some(&p),
+                None => Some(p),
             },
             _ => None,
         }
