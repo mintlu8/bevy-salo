@@ -56,8 +56,8 @@ impl<M: Marker> SerializeContext<M> {
 /// Paths used in the deserialization step.
 #[derive(Debug, Resource, Default)]
 pub struct DeserializeContext<M: Marker>{
-    components: HashMap<String, Vec<PathedValueOf<M>>>,
-    path_map: HashMap<EntityPath, Entity>,
+    pub(crate) components: HashMap<String, Vec<PathedValueOf<M>>>,
+    pub(crate) path_map: HashMap<EntityPath, Entity>,
     p: PhantomData<M>,
 }
 
@@ -114,6 +114,33 @@ pub enum EntityPath {
 impl EntityPath {
     pub fn is_unique(&self) -> bool {
         self == &Self::Unique
+    }
+
+    /// Get the last `::` delimited segment of path
+    /// 
+    /// # Panics
+    /// 
+    /// If `self` is not a path.
+    pub fn name(&self) -> &str {
+        match self {
+            EntityPath::Unique => panic!("Empty path does not contain a name."),
+            EntityPath::Entity(e) => panic!("Entity {:?} does not contain a name.", e),
+            EntityPath::Path(p) => match p.rsplit_once("::") {
+                Some((_, a)) => a,
+                None => &p,
+            },
+        }
+    }
+
+    /// Get the last `::` delimited segment of path
+    pub fn get_name(&self) -> Option<&str> {
+        match self {
+            EntityPath::Path(p) => match p.rsplit_once("::") {
+                Some((_, a)) => Some(a),
+                None => Some(&p),
+            },
+            _ => None,
+        }
     }
 }
 
@@ -216,7 +243,7 @@ pub trait SaveLoad: Component + Sized {
         query: Query<(Entity, &Self), M::Query>, 
         parents: Query<&Parent>,
         marked: Query<(), M::Query>,
-        res: StaticSystemParam<Self::Context<'_, '_>>,
+        ctx: StaticSystemParam<Self::Context<'_, '_>>,
     ) {
         for (entity, item) in query.iter() {
             let parent = match parents.get(entity) {
@@ -250,7 +277,7 @@ pub trait SaveLoad: Component + Sized {
             let path = PathedValue {
                 parent, 
                 path,
-                value: M::Method::serialize_value(&Self::to_serializable(item, entity, path_fetcher, &res)).unwrap()
+                value: M::Method::serialize_value(&Self::to_serializable(item, entity, path_fetcher, &ctx)).unwrap()
             };
             match paths.components.get_mut(&Self::type_name()) {
                 Some(vec) => vec.push(path),

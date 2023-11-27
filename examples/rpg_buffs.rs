@@ -1,7 +1,7 @@
 use bevy_app::{App, Update, Startup};
-use bevy_ecs::{system::{Commands, Res, ResMut}, component::Component, world::World};
+use bevy_ecs::{system::{Commands, Res, ResMut, Resource}, component::Component, world::World};
 use bevy_hierarchy::BuildChildren;
-use bevy_salo::{SaveLoadPlugin, SaveLoadCore, SaveLoadExtension, methods::Ron, interned_enum, SaveLoad, EntityPath};
+use bevy_salo::{SaveLoadPlugin, SaveLoadCore, SaveLoadExtension, methods::Ron, interned_enum, SaveLoad, EntityPath, SaveLoadResCore};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Component, Clone, Serialize, Deserialize, Default)]
@@ -81,13 +81,39 @@ impl SaveLoad for Buff {
     }
 }
 
+#[derive(Debug, Resource, Clone, Serialize, Deserialize, Default)]
+struct Weather(String);
+
+impl SaveLoadResCore for Weather {
+    fn type_name() -> std::borrow::Cow<'static, str> {
+        std::borrow::Cow::Borrowed("weather")
+    }
+}
+
 type All = bevy_salo::All<Ron<true>>;
+
+
+
+#[derive(Debug, Component, Clone, Serialize, Deserialize, Default)]
+struct Stage;
+impl SaveLoadCore for Stage {
+    fn type_name() -> std::borrow::Cow<'static, str> {
+        std::borrow::Cow::Borrowed("stage")
+    }
+
+    fn path_name(&self) -> Option<std::borrow::Cow<'static, str>> {
+        Some(std::borrow::Cow::Borrowed("stage"))
+    }
+}
 
 pub fn main() {
     App::new()
+        .insert_resource::<Weather>(Weather("Snow".to_owned()))
         .add_plugins(SaveLoadPlugin::new::<All>()
             .register::<Human>()
             .register::<Buff>()
+            .register_names::<Stage>()
+            .register_resource::<Weather>()
         )
         .add_systems(Startup, spawn)
         .add_systems(Update, serialize)
@@ -97,37 +123,39 @@ pub fn main() {
 }
 
 pub fn spawn(mut commands: Commands) {
-    let children = [
-        commands.spawn(Buff {
-            name: "Attack Up!".to_owned(),
-            stat: Stat::Attack,
-            value: 4.0,
-        }).id(),
-        commands.spawn(Buff {
-            name: "Defense Up!".to_owned(),
-            stat: Stat::Defense,
-            value: 6.7,
-        }).id(),
-    ];
-    commands.spawn(Human {
-        name: "Jimmy".to_owned(),
-        age: 32,
-        hp: 42.1,
-        attack: 7.8,
-    }).push_children(&children);
-    let children = [
-        commands.spawn(Buff {
-            name: "Magic Up!".to_owned(),
-            stat: Stat::Magic,
-            value: 4.0,
-        }).id(),
-    ];
-    commands.spawn(Human {
-        name: "Sammy".to_owned(),
-        age: 27,
-        hp: 55.6,
-        attack: 2.4,
-    }).push_children(&children);
+    commands.spawn(Stage).with_children(|commands| {
+        let children = [
+            commands.spawn(Buff {
+                name: "Attack Up!".to_owned(),
+                stat: Stat::Attack,
+                value: 4.0,
+            }).id(),
+            commands.spawn(Buff {
+                name: "Defense Up!".to_owned(),
+                stat: Stat::Defense,
+                value: 6.7,
+            }).id(),
+        ];
+        commands.spawn(Human {
+            name: "Jimmy".to_owned(),
+            age: 32,
+            hp: 42.1,
+            attack: 7.8,
+        }).push_children(&children);
+        let children = [
+            commands.spawn(Buff {
+                name: "Magic Up!".to_owned(),
+                stat: Stat::Magic,
+                value: 4.0,
+            }).id(),
+        ];
+        commands.spawn(Human {
+            name: "Sammy".to_owned(),
+            age: 27,
+            hp: 55.6,
+            attack: 2.4,
+        }).push_children(&children);
+    });
 }
 
 pub fn serialize(world: &mut World) {

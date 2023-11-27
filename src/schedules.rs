@@ -7,7 +7,7 @@ use bevy_ecs::world::World;
 use bevy_ecs::schedule::IntoSystemSetConfigs;
 use bevy_hierarchy::Parent;
 use crate::methods::SerializationMethod;
-use crate::{SaveLoadPlugin, SaveLoad, PathNames, SerializeContext, DeserializeContext, BytesOutput, StringOutput, PathName, BytesInput};
+use crate::{SaveLoadPlugin, SaveLoad, PathNames, SerializeContext, DeserializeContext, BytesOutput, StringOutput, PathName, BytesInput, SaveLoadRes};
 use crate::sealed::Build;
 use crate::{Marker, All};
 use std::fmt::Debug;
@@ -199,6 +199,13 @@ fn build_de_context<M: Marker>(
     }
 }
 
+/// Builder for resources.
+#[doc(hidden)]
+pub struct BuildRes<T>(PhantomData<T>);
+
+/// Builder for names only.
+#[doc(hidden)]
+pub struct Names<T>(PhantomData<T>);
 
 schedules!(SaveSchedule, LoadSchedule, ResetSchedule);
 system_sets!(InitSerialize, RunSerialize, InitDeserialize, RunDeserialize, WriteOutput);
@@ -229,7 +236,18 @@ impl<M: Marker, C: Build> SaveLoadPlugin<M, C> {
         world.add_schedule(reset);
     }
 
+    /// Register serialization of a `Component`
     pub fn register<T: SaveLoad>(self) -> SaveLoadPlugin<M, (C, T)> {
+        SaveLoadPlugin(PhantomData)
+    }
+
+    /// Register serialization of a `Resource`.
+    pub fn register_resource<T: SaveLoadRes>(self) -> SaveLoadPlugin<M, (C, BuildRes<T>)> {
+        SaveLoadPlugin(PhantomData)
+    }
+
+    /// Register names of an externally serialized `Component`, but does not perform serialization.
+    pub fn register_names<T: SaveLoad>(self) -> SaveLoadPlugin<M, (C, Names<T>)> {
         SaveLoadPlugin(PhantomData)
     }
 }

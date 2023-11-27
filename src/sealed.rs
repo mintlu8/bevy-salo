@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use bevy_ecs::world::World;
 use bevy_ecs::schedule::{Schedule, IntoSystemConfigs};
 use crate::methods::SerializationMethod;
-use crate::{SaveLoad, StringOutput, BytesOutput, Marker};
+use crate::{SaveLoad, StringOutput, BytesOutput, Marker, SaveLoadRes};
 use crate::schedules::*;
 
 pub trait Sealed {}
@@ -27,10 +27,12 @@ impl<S: SerializationMethod, const FORK: char> Default for All<S, FORK> {
 
 pub trait Build {
     fn build<M: Marker>(ser: &mut Schedule, de: &mut Schedule, reset: &mut Schedule);
+    fn build_names<M: Marker>(_: &mut Schedule, _: &mut Schedule);
 }
 
 impl Build for () {
     fn build<M: Marker>(_: &mut Schedule, _: &mut Schedule, _: &mut Schedule) {}
+    fn build_names<M: Marker>(_: &mut Schedule, _: &mut Schedule) {}
 }
 
 macro_rules! build_tuple {
@@ -40,6 +42,10 @@ macro_rules! build_tuple {
             fn build<M: Marker>(ser: &mut Schedule, de: &mut Schedule, reset: &mut Schedule) {
                 $first::build::<M>(ser, de, reset);
                 $($rest::build::<M>(ser, de, reset);)*
+            }
+            fn build_names<M: Marker>(ser: &mut Schedule, de: &mut Schedule) {
+                $first::build_names::<M>(ser, de);
+                $($rest::build_names::<M>(ser, de);)*
             }
         }
         build_tuple!($($rest),*);
@@ -56,6 +62,30 @@ impl<T> Build for T where T: SaveLoad {
         de.add_systems(Self::build_path::<M>.in_set(InitDeserialize));
         de.add_systems(Self::deserialize_system::<M>.in_set(RunDeserialize));
         reset.add_systems(Self::remove_all::<M>);
+    }
+
+    fn build_names<M: Marker>(ser: &mut Schedule, de: &mut Schedule) {
+        ser.add_systems(Self::build_path::<M>.in_set(InitSerialize));
+        de.add_systems(Self::build_path::<M>.in_set(InitDeserialize));
+    }
+}
+
+impl<T> Build for BuildRes<T> where T: SaveLoadRes {
+    fn build<M: Marker>(ser: &mut Schedule, de: &mut Schedule, reset: &mut Schedule) {
+        ser.add_systems(T::serialize_system::<M>.in_set(RunSerialize));
+        de.add_systems(T::deserialize_system::<M>.in_set(RunDeserialize));
+        reset.add_systems(T::remove::<M>);
+    }
+
+    fn build_names<M: Marker>(_: &mut Schedule, _: &mut Schedule) {}
+}
+
+impl<T> Build for Names<T> where T: Build {
+    fn build<M: Marker>(ser: &mut Schedule, de: &mut Schedule, _: &mut Schedule) {
+        T::build_names::<M>(ser, de)
+    }
+    fn build_names<M: Marker>(ser: &mut Schedule, de: &mut Schedule) {
+        T::build_names::<M>(ser, de)
     }
 }
 

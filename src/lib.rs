@@ -276,12 +276,14 @@
 
 pub mod methods;
 mod saveload;
+mod res;
 
 use bevy_ecs::bundle::Bundle;
 use bevy_ecs::query::{ReadOnlyWorldQuery, With};
 use bevy_ecs::world::World;
 use methods::{SerializationMethod, SerdeJson};
 pub use saveload::*;
+pub use res::*;
 use schedules::{SaveSchedule, ResetSchedule};
 use sealed::SerializationResult;
 use std::borrow::Cow;
